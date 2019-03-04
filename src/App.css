@@ -37,3 +37,17 @@
   position: absolute;
   bottom: -2em;
 }
+
+.header {
+  font-size: 2em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-icon {
+  vertical-align: bottom;
+}
+
+.info-icon svg {
+  vertical-align: bottom;
+}

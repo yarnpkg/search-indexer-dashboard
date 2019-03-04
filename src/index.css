@@ -27,8 +27,12 @@ svg {
   height: 1em;
 }
 
+.inaccessible-link {
+  color: currentColor;
+}
+
 .inaccessible-button {
-  font-size: 2em;
+  font-size: 1em;
   height: 1em;
   background: none;
   border: none;

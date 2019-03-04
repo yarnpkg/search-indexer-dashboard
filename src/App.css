@@ -36,6 +36,7 @@
 .raw-data {
   position: absolute;
   bottom: -2em;
+  background: white;
 }
 
 .header {

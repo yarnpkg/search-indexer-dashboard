@@ -189,7 +189,12 @@ const server = new ApolloServer({
     settings: {
       'editor.theme': 'light',
     },
-    tabs: [{ query: ALL_ITEMS_QUERY, endpoint: '/.netlify/functions/graphql' }],
+    tabs: [
+      {
+        endpoint: '/.netlify/functions/graphql',
+        query: ALL_ITEMS_QUERY,
+      },
+    ],
   },
 });
 

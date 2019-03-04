@@ -162,6 +162,11 @@ function Visualization({ data }) {
       <small>
         <details className="raw-data">
           <summary>Raw data</summary>
+          <p>
+            If you are interested, there's also a{' '}
+            <a href="/.netlify/functions/graphql">GraphQL playground</a>{' '}
+            available for this data.
+          </p>
           <pre>{JSON.stringify(data, null, 2)}</pre>
         </details>
       </small>

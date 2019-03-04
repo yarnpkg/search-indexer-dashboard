@@ -1,0 +1,39 @@
+.table {
+  display: grid;
+  grid-template-columns: 4fr 4fr 4fr;
+  grid-row-gap: 3em;
+}
+
+.table-item {
+  --col-span: 'not overriden';
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-column: 1 / span var(--col-span);
+}
+
+.mega {
+  font-size: 3em;
+  font-weight: 700;
+}
+
+.massive {
+  font-size: 5em;
+  font-weight: 700;
+}
+
+.medium {
+  font-size: 1.5em;
+  font-weight: 500;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 2em;
+}
+
+.raw-data {
+  position: absolute;
+  bottom: -2em;
+}

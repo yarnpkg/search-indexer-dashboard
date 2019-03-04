@@ -1,0 +1,49 @@
+:root {
+  --monospace: Menlo, monospace;
+  --sans-serif: -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--sans-serif);
+}
+
+.error {
+  color: red;
+  background-color: pink;
+  border: 0.2em solid currentColor;
+  padding: 1em;
+  margin: 1em;
+  font-family: var(--monospace);
+}
+
+code,
+pre {
+  font-family: var(--monospace);
+}
+
+svg {
+  width: 1em;
+  height: 1em;
+}
+
+.inaccessible-button {
+  font-size: 2em;
+  height: 1em;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.inaccessible-button:active {
+  color: currentColor;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(-360deg);
+  }
+}

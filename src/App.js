@@ -147,6 +147,14 @@ function Visualization({ data }) {
 
 const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
   <>
+    <div className="table-item" style={{ '--col-span': 3 }}>
+      <progress
+        min={0}
+        max={packages.npm}
+        value={packages.npmSearchBootstrap}
+      />
+    </div>
+
     <div className="table-item">
       <div>
         <code>bootstrap</code> sequence

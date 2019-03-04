@@ -1,10 +1,11 @@
 :root {
   --monospace: Menlo, monospace;
-  --sans-serif: -apple-system, sans-serif;
+  --sans-serif: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
   font-family: var(--sans-serif);
+  color: rgb(34, 39, 39);
 }
 
 .error {
@@ -46,4 +47,26 @@ svg {
   100% {
     transform: rotate(-360deg);
   }
+}
+
+progress[value] {
+  appearance: none;
+  width: 100%;
+  height: 0.5em;
+}
+
+progress[value]::-webkit-progress-bar {
+  background: none;
+}
+
+progress[value]::-webkit-progress-inner-element {
+  border: 1px solid currentColor;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: currentColor;
+}
+
+button {
+  color: currentColor;
 }

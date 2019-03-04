@@ -148,37 +148,36 @@ const resolvers = {
   },
 };
 
-const ALL_ITEMS_QUERY = `
-  {
-    applicationStatus {
-      building {
-        npmSearch
-        npmSearchBootstrap
-      }
-    }
-
-    indexStatus {
-      npmSearch {
-        nbHits
-      }
-      npmSearchBootstrap {
-        nbHits
-      }
-    }
-
-    indexerStatus {
-      seq
-      stage
-      bootstrapLastDone
-      bootstrapDone
-      bootstrapLastId
-    }
-
-    npmStatus {
-      seq
-      nbDocs
+const ALL_ITEMS_QUERY = `{
+  applicationStatus {
+    building {
+      npmSearch
+      npmSearchBootstrap
     }
   }
+
+  indexStatus {
+    npmSearch {
+      nbHits
+    }
+    npmSearchBootstrap {
+      nbHits
+    }
+  }
+
+  indexerStatus {
+    seq
+    stage
+    bootstrapLastDone
+    bootstrapDone
+    bootstrapLastId
+  }
+
+  npmStatus {
+    seq
+    nbDocs
+  }
+}
 `;
 
 const server = new ApolloServer({
@@ -189,9 +188,11 @@ const server = new ApolloServer({
     settings: {
       'editor.theme': 'light',
     },
+    endpoint: '/.netlify/functions/graphql',
     tabs: [
       {
         endpoint: '/.netlify/functions/graphql',
+        name: 'all items',
         query: ALL_ITEMS_QUERY,
       },
     ],

@@ -11,7 +11,7 @@ const algoliaIndex = searchClient.initIndex('npm-search');
 
 // The GraphQL schema
 const typeDefs = gql`
-  "Status of an Algolia index"
+  # Status of an Algolia index
   type IndexStatus {
     nbHits: Int
   }
@@ -21,23 +21,32 @@ const typeDefs = gql`
     npmSearchBootstrap: IndexStatus
   }
 
-  "Status of the indexer"
-  type IndexerStatus {
-    "Last npm sequence indexed"
-    seq: Int
-    "Is bootstrap sequence completed"
-    bootstrapDone: Boolean
-    "Last package indexed in bootstrap"
-    bootstrapLastId: String
-    "Date last finished bootstrap"
-    bootstrapLastDone: String
+  # Current stage of the indexer
+  enum IndexerStage {
+    bootstrap
+    replicate
+    watch
   }
 
-  "status of the npm api"
-  type NpmStatus {
-    "current npm sequence"
+  # Status of the indexer process
+  type IndexerStatus {
+    # Last npm sequence indexed
     seq: Int
-    "number of packages in the registry"
+    # Is bootstrap sequence completed
+    bootstrapDone: Boolean
+    # Last package indexed in bootstrap
+    bootstrapLastId: String
+    # Date last finished bootstrap
+    bootstrapLastDone: String
+    # stage
+    stage: IndexerStage
+  }
+
+  # status of the npm api
+  type NpmStatus {
+    # current npm sequence
+    seq: Int
+    # number of packages in the registry
     nbDocs: Int
   }
 
@@ -46,7 +55,7 @@ const typeDefs = gql`
     npmSearchBootstrap: Int
   }
 
-  "Status on the whole application"
+  # Status on the whole application
   type ApplicationStatus {
     building: BuildJobs
     nbRecords: Int
@@ -66,7 +75,6 @@ const typeDefs = gql`
     indexStatus: IndexesStatus
     indexerStatus: IndexerStatus
     npmStatus: NpmStatus
-    exposure: String
   }
 `;
 
@@ -120,12 +128,14 @@ const resolvers = {
               bootstrapDone,
               bootstrapLastId,
               bootstrapLastDone = 0,
+              stage,
             },
           }) => ({
             seq,
             bootstrapDone,
             bootstrapLastId,
             bootstrapLastDone: bootstrapLastDone.toString(),
+            stage,
           })
         ),
     npmStatus: () =>
@@ -138,9 +148,49 @@ const resolvers = {
   },
 };
 
+const ALL_ITEMS_QUERY = `
+  {
+    applicationStatus {
+      building {
+        npmSearch
+        npmSearchBootstrap
+      }
+    }
+
+    indexStatus {
+      npmSearch {
+        nbHits
+      }
+      npmSearchBootstrap {
+        nbHits
+      }
+    }
+
+    indexerStatus {
+      seq
+      stage
+      bootstrapLastDone
+      bootstrapDone
+      bootstrapLastId
+    }
+
+    npmStatus {
+      seq
+      nbDocs
+    }
+  }
+`;
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,
+  playground: {
+    settings: {
+      'editor.theme': 'light',
+    },
+    tabs: [{ query: ALL_ITEMS_QUERY, endpoint: '/.netlify/functions/graphql' }],
+  },
 });
 
 exports.handler = server.createHandler();

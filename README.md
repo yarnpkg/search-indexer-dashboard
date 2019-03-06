@@ -2,7 +2,7 @@
 
 https://yarn-search-status.netlify.com
 
-This is a small dashboard (and graphql endpoint) for seeing the status of the npm -> Algolia indexer.
+This is a small dashboard (and graphql endpoint) for seeing the status of the [npm -> Algolia indexer](https://github.com/algolia/npm-search).
 
 ## Setting this up yourself
 

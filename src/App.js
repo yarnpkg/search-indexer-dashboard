@@ -104,7 +104,7 @@ function Visualization({ data }) {
 
   const bootstrapLastDone = Number(bootstrapLastDoneString);
   const nextBootstrap = bootstrapLastDone + ms('1 week');
-  const timeSinceLastBootstrap = bootstrapLastDone - nextBootstrap;
+  const timeSinceLastBootstrap = new Date().getTime() - bootstrapLastDone;
 
   return (
     <div>
@@ -245,11 +245,21 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
   </>
 );
 
+const dayFormat = new Intl.DateTimeFormat('en-FR', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+});
+
 const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
   <>
     <div className="table-item">
       <div>last bootstrap</div>
-      <div className="medium">{bootstrap.last.toLocaleDateString('nl-BE')}</div>
+      <div className="medium" title={dayFormat.format(bootstrap.last)}>
+        {bootstrap.last.toLocaleDateString('nl-BE')}
+      </div>
       <div>{bootstrap.last.toLocaleTimeString('nl-BE')}</div>
     </div>
     <div className="table-item">
@@ -261,7 +271,9 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
     </div>
     <div className="table-item">
       <div>next bootstrap</div>
-      <div className="medium">{bootstrap.next.toLocaleDateString('nl-BE')}</div>
+      <div className="medium" title={dayFormat.format(bootstrap.next)}>
+        {bootstrap.next.toLocaleDateString('nl-BE')}
+      </div>
       <div>{bootstrap.next.toLocaleTimeString('nl-BE')}</div>
     </div>
 

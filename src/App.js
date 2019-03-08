@@ -94,20 +94,17 @@ function Visualization({ data }) {
     applicationStatus: { building },
     npmStatus,
     indexStatus: { npmSearch, npmSearchBootstrap },
-    indexerStatus: { bootstrapLastId, stage, bootstrapLastDone, seq },
+    indexerStatus: {
+      bootstrapLastId,
+      stage,
+      bootstrapLastDone: bootstrapLastDoneString,
+      seq,
+    },
   } = data;
 
-  const bootstrapLastDoneDate = new Date(Number(bootstrapLastDone));
-  const nextBootstrapDate = new Date(
-    bootstrapLastDoneDate.getFullYear(),
-    bootstrapLastDoneDate.getMonth(),
-    bootstrapLastDoneDate.getDate() + 7
-  );
-  nextBootstrapDate.setUTCHours(bootstrapLastDoneDate.getUTCHours());
-  nextBootstrapDate.setUTCMinutes(bootstrapLastDoneDate.getUTCMinutes());
-  nextBootstrapDate.setUTCSeconds(bootstrapLastDoneDate.getUTCSeconds());
-  const timeSinceLastBootstrap =
-    new Date().getTime() - bootstrapLastDoneDate.getTime();
+  const bootstrapLastDone = Number(bootstrapLastDoneString);
+  const nextBootstrap = bootstrapLastDone + ms('1 week');
+  const timeSinceLastBootstrap = bootstrapLastDone - nextBootstrap;
 
   return (
     <div>
@@ -138,9 +135,9 @@ function Visualization({ data }) {
         {(stage === 'watch' || stage === 'replicate') && (
           <WatchStage
             bootstrap={{
-              last: bootstrapLastDoneDate,
+              last: new Date(bootstrapLastDone),
               diff: ms(timeSinceLastBootstrap, { long: true }),
-              next: nextBootstrapDate,
+              next: new Date(nextBootstrap),
             }}
             sequence={{
               npmSearch: seq,

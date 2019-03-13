@@ -306,7 +306,7 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
     <div className="table-item">
       <div>
         <span># packages difference</span>
-        <Info title="the difference in number of packages should be close to 1500 (packages we don't consider as real due to having no author)" />
+        <Info title="the difference in number of packages should be close to 200 (packages we don't consider as real due to having no author)" />
       </div>
       <div className="massive">{packages.diff.toLocaleString('fr-FR')}</div>
     </div>

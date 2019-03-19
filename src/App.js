@@ -178,6 +178,9 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         min={0}
         max={packages.npm}
         value={packages.npmSearchBootstrap}
+        title={`${Math.round(
+          (100 * packages.npmSearchBootstrap) / packages.npm
+        )}% (${packages.npmSearchBootstrap} out of ${packages.npm})`}
       />
     </div>
 

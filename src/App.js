@@ -84,7 +84,7 @@ export default function App() {
         />
       )}
 
-      {data && <Visualization data={data} />}
+      {!error && data && <Visualization data={data} />}
     </>
   );
 }
@@ -333,12 +333,36 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
 );
 
 function Error({ httpError, fetchError, graphQLErrors }) {
-  if (httpError) return <div className="error">{httpError.statusText}</div>;
+  if (httpError) {
+    return <div className="error">{httpError.statusText}</div>;
+  }
+  if (graphQLErrors) {
+    return (
+      <div className="error">
+        GraphQL Errors:
+        {graphQLErrors.map(error => (
+          <ErrorMessage {...error} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="error">
-      An error occurred
-      <pre>{JSON.stringify([fetchError, graphQLErrors])}</pre>
+      A network error occurred:
+      <ErrorMessage {...fetchError} />
+    </div>
+  );
+}
+
+function ErrorMessage({ message, ...more }) {
+  return (
+    <div>
+      {message}
+      <details>
+        <summary>Full error</summary>
+        <pre>{JSON.stringify(more, null, 2)}</pre>
+      </details>
     </div>
   );
 }

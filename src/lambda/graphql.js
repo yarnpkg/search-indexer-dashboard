@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { ApolloServer, gql } = require('apollo-server-lambda');
 const algoliasearch = require('algoliasearch');
-const fetch = require('node-fetch');
+const got = require('got');
 
 const { ALGOLIA_APP_ID, ALGOLIA_API_KEY } = process.env;
 
@@ -139,12 +139,14 @@ const resolvers = {
           })
         ),
     npmStatus: () =>
-      fetch('https://replicate.npmjs.com/registry')
-        .then(res => res.json())
+          // new Promise((resolve, reject) => {
+          //   resolve({nbDocs: 5, seq: 5})
+          // })
+      got('https://replicate.npmjs.com/registry', {json: true})
         .then(({ body: { doc_count: nbDocs, update_seq: seq } }) => ({
           nbDocs,
           seq,
-        })),
+        }))
   },
 };
 

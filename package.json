@@ -7,6 +7,7 @@
     "apollo-server-lambda": "^2.5.0",
     "bufferutil": "^4.0.1",
     "dotenv": "^6.2.0",
+    "encoding": "^0.1.12",
     "got": "^9.6.0",
     "graphql": "^14.1.1",
     "graphql-hooks": "^3.2.2",

@@ -103,7 +103,7 @@ function Visualization({ data }) {
   } = data;
 
   const bootstrapLastDone = Number(bootstrapLastDoneString);
-  const nextBootstrap = bootstrapLastDone + ms('1 week');
+  const nextBootstrap = bootstrapLastDone + ms('2 weeks');
   const timeSinceLastBootstrap = new Date().getTime() - bootstrapLastDone;
 
   return (

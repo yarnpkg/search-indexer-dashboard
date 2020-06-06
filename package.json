@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "algoliasearch": "^3.32.0",
-    "apollo-server-lambda": "^2.5.0",
+    "apollo-server-lambda": "^2.14.2",
     "bufferutil": "^4.0.1",
     "dotenv": "^6.2.0",
     "encoding": "^0.1.12",

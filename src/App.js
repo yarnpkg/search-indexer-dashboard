@@ -189,7 +189,7 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         <code>bootstrap</code> sequence
       </div>
       <div className="medium">
-        {progress.npmSearchBootstrap.toLocaleString('fr-FR')}
+        {(progress.npmSearchBootstrap || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -203,7 +203,9 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
       <div>
         <code>npm</code> sequence
       </div>
-      <div className="medium">{progress.npm.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(progress.npm || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
 
     <div className="table-item">
@@ -211,7 +213,7 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         # packages in <code>bootstrap</code>
       </div>
       <div className="medium">
-        {packages.npmSearchBootstrap.toLocaleString('fr-FR')}
+        {(packages.npmSearchBootstrap || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -219,13 +221,17 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         <span># packages difference</span>
         <Info title="this should trend towards 0 in ±24h" />
       </div>
-      <div className="massive">{packages.diff.toLocaleString('fr-FR')}</div>
+      <div className="massive">
+        {(packages.diff || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item">
       <div>
         # packages in <code>npm</code>
       </div>
-      <div className="medium">{packages.npm.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(packages.npm || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
 
     <div className="table-item" style={{ '--col-span': 3 }}>
@@ -233,7 +239,9 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         <span>jobs processing</span>
         <Info title="should be close to 0" />
       </div>
-      <div className="massive">{jobs.processing.toLocaleString('fr-FR')}</div>
+      <div className="massive">
+        {(jobs.processing || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
 
     <div className="table-item" style={{ '--col-span': 3 }}>
@@ -261,9 +269,9 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
     <div className="table-item">
       <div>last bootstrap</div>
       <div className="medium" title={dayFormat.format(bootstrap.last)}>
-        {bootstrap.last.toLocaleDateString('nl-BE')}
+        {(bootstrap.last || 0).toLocaleDateString('nl-BE')}
       </div>
-      <div>{bootstrap.last.toLocaleTimeString('nl-BE')}</div>
+      <div>{(bootstrap.last || 0).toLocaleTimeString('nl-BE')}</div>
     </div>
     <div className="table-item">
       <div>
@@ -275,49 +283,61 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
     <div className="table-item">
       <div>next bootstrap</div>
       <div className="medium" title={dayFormat.format(bootstrap.next)}>
-        {bootstrap.next.toLocaleDateString('nl-BE')}
+        {(bootstrap.next || 0).toLocaleDateString('nl-BE')}
       </div>
-      <div>{bootstrap.next.toLocaleTimeString('nl-BE')}</div>
+      <div>{(bootstrap.next || 0).toLocaleTimeString('nl-BE')}</div>
     </div>
 
     <div className="table-item">
       <div>
         <code>npm-search</code> sequence
       </div>
-      <div className="medium">{sequence.npmSearch.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(sequence.npmSearch || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item">
       <div>
         <span>sequence difference</span>
         <Info title="the sequence difference should be close to 0. Any change in the npm registry is a sequence" />
       </div>
-      <div className="massive">{sequence.diff.toLocaleString('fr-FR')}</div>
+      <div className="massive">
+        {(sequence.diff || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item">
       <div>
         <code>npm</code> sequence
       </div>
-      <div className="medium">{sequence.npm.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(sequence.npm || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
 
     <div className="table-item">
       <div>
         # packages in <code>npm-search</code>
       </div>
-      <div className="medium">{packages.npmSearch.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(packages.npmSearch || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item">
       <div>
         <span># packages difference</span>
         <Info title="the difference in number of packages should be close to 200 (packages we don't consider as real due to having no author)" />
       </div>
-      <div className="massive">{packages.diff.toLocaleString('fr-FR')}</div>
+      <div className="massive">
+        {(packages.diff || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item">
       <div>
         # packages in <code>npm</code>
       </div>
-      <div className="medium">{packages.npm.toLocaleString('fr-FR')}</div>
+      <div className="medium">
+        {(packages.npm || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
 
     <div className="table-item" />
@@ -326,7 +346,9 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
         <span>jobs processing</span>
         <Info title="should be close to 0" />
       </div>
-      <div className="massive">{jobs.processing.toLocaleString('fr-FR')}</div>
+      <div className="massive">
+        {(jobs.processing || 0).toLocaleString('fr-FR')}
+      </div>
     </div>
     <div className="table-item" />
   </>
@@ -340,7 +362,7 @@ function Error({ httpError, fetchError, graphQLErrors }) {
     return (
       <div className="error">
         GraphQL Errors:
-        {graphQLErrors.map(error => (
+        {graphQLErrors.map((error) => (
           <ErrorMessage {...error} />
         ))}
       </div>

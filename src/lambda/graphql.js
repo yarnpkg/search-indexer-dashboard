@@ -142,7 +142,7 @@ const resolvers = {
           // new Promise((resolve, reject) => {
           //   resolve({nbDocs: 5, seq: 5})
           // })
-      got('https://replicate.npmjs.com/registry', {json: true})
+      got('https://replicate.npmjs.com', {json: true})
         .then(({ body: { doc_count: nbDocs, update_seq: seq } }) => ({
           nbDocs,
           seq,

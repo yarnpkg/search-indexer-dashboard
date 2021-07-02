@@ -4,27 +4,34 @@ import ms from 'ms';
 import './App.css';
 
 const ALL_ITEMS_QUERY = `
-  {
-    applicationStatus {
+  query AllInformation($mainIndexName: String, $bootstrapIndexName: String) {
+    applicationStatus(
+      mainIndexName: $mainIndexName
+      bootstrapIndexName: $bootstrapIndexName
+    ) {
       building {
-        npmSearch
-        npmSearchBootstrap
+        main
+        bootstrap
       }
     }
 
-    indexStatus {
-      npmSearch {
+    indexStatus(
+      mainIndexName: $mainIndexName
+      bootstrapIndexName: $bootstrapIndexName
+    ) {
+      main {
         nbHits
       }
-      npmSearchBootstrap {
+      bootstrap {
         nbHits
       }
     }
 
-    indexerStatus {
+    indexerStatus(mainIndexName: $mainIndexName) {
       seq
       stage
       bootstrapLastDone
+      bootstrapDone
       bootstrapLastId
     }
 
@@ -55,7 +62,9 @@ export default function App() {
     fetchError,
     httpError,
     graphQLErrors,
-  } = useQuery(ALL_ITEMS_QUERY);
+  } = useQuery(ALL_ITEMS_QUERY, {
+    variables: Object.fromEntries(new URLSearchParams(window.location.search)),
+  });
 
   return (
     <>
@@ -93,7 +102,7 @@ function Visualization({ data }) {
   const {
     applicationStatus: { building },
     npmStatus,
-    indexStatus: { npmSearch, npmSearchBootstrap },
+    indexStatus: { main, bootstrap },
     indexerStatus: {
       bootstrapLastId,
       stage,
@@ -120,15 +129,15 @@ function Visualization({ data }) {
             progress={{
               npm: npmStatus.seq,
               diff: seq - npmStatus.seq,
-              npmSearchBootstrap: seq,
+              bootstrap: seq,
             }}
             packages={{
-              npmSearchBootstrap: npmSearchBootstrap.nbHits,
-              diff: npmSearchBootstrap.nbHits - npmStatus.nbDocs,
+              bootstrap: bootstrap.nbHits,
+              diff: bootstrap.nbHits - npmStatus.nbDocs,
               npm: npmStatus.nbDocs,
             }}
             jobs={{
-              processing: building.npmSearchBootstrap,
+              processing: building.bootstrap,
             }}
           />
         )}
@@ -140,17 +149,17 @@ function Visualization({ data }) {
               next: new Date(nextBootstrap),
             }}
             sequence={{
-              npmSearch: seq,
+              main: seq,
               diff: npmStatus.seq - seq,
               npm: npmStatus.seq,
             }}
             packages={{
-              npmSearch: npmSearch.nbHits,
-              diff: npmSearch.nbHits - npmStatus.nbDocs,
+              main: main.nbHits,
+              diff: main.nbHits - npmStatus.nbDocs,
               npm: npmStatus.nbDocs,
             }}
             jobs={{
-              processing: building.npmSearch,
+              processing: building.main,
             }}
           />
         )}
@@ -177,10 +186,10 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
       <progress
         min={0}
         max={packages.npm}
-        value={packages.npmSearchBootstrap}
-        title={`${Math.round(
-          (100 * packages.npmSearchBootstrap) / packages.npm
-        )}% (${packages.npmSearchBootstrap} out of ${packages.npm})`}
+        value={packages.bootstrap}
+        title={`${Math.round((100 * packages.bootstrap) / packages.npm)}% (${
+          packages.bootstrap
+        } out of ${packages.npm})`}
       />
     </div>
 
@@ -189,7 +198,7 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         <code>bootstrap</code> sequence
       </div>
       <div className="medium">
-        {(progress.npmSearchBootstrap || 0).toLocaleString('fr-FR')}
+        {(progress.bootstrap || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -213,7 +222,7 @@ const BootstrapStage = ({ lastProcessed, progress, packages, jobs }) => (
         # packages in <code>bootstrap</code>
       </div>
       <div className="medium">
-        {(packages.npmSearchBootstrap || 0).toLocaleString('fr-FR')}
+        {(packages.bootstrap || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -293,7 +302,7 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
         <code>npm-search</code> sequence
       </div>
       <div className="medium">
-        {(sequence.npmSearch || 0).toLocaleString('fr-FR')}
+        {(sequence.main || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -319,7 +328,7 @@ const WatchStage = ({ bootstrap, sequence, packages, jobs }) => (
         # packages in <code>npm-search</code>
       </div>
       <div className="medium">
-        {(packages.npmSearch || 0).toLocaleString('fr-FR')}
+        {(packages.main || 0).toLocaleString('fr-FR')}
       </div>
     </div>
     <div className="table-item">
@@ -362,7 +371,7 @@ function Error({ httpError, fetchError, graphQLErrors }) {
     return (
       <div className="error">
         GraphQL Errors:
-        {graphQLErrors.map((error) => (
+        {graphQLErrors.map(error => (
           <ErrorMessage {...error} />
         ))}
       </div>

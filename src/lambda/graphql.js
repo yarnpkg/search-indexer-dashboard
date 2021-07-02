@@ -7,8 +7,6 @@ const { ALGOLIA_APP_ID, ALGOLIA_API_KEY } = process.env;
 
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
 
-const algoliaIndex = searchClient.initIndex('npm-search');
-
 // The GraphQL schema
 const typeDefs = gql`
   # Status of an Algolia index
@@ -17,8 +15,8 @@ const typeDefs = gql`
   }
 
   type IndexesStatus {
-    npmSearch: IndexStatus
-    npmSearchBootstrap: IndexStatus
+    main: IndexStatus
+    bootstrap: IndexStatus
   }
 
   # Current stage of the indexer
@@ -51,8 +49,8 @@ const typeDefs = gql`
   }
 
   type BuildJobs {
-    npmSearch: Int
-    npmSearchBootstrap: Int
+    main: Int
+    bootstrap: Int
   }
 
   # Status on the whole application
@@ -71,16 +69,28 @@ const typeDefs = gql`
   }
 
   type Query {
-    applicationStatus: ApplicationStatus
-    indexStatus: IndexesStatus
-    indexerStatus: IndexerStatus
+    applicationStatus(
+      mainIndexName: String
+      bootstrapIndexName: String
+    ): ApplicationStatus
+    indexStatus(
+      mainIndexName: String
+      bootstrapIndexName: String
+    ): IndexesStatus
+    indexerStatus(mainIndexName: String): IndexerStatus
     npmStatus: NpmStatus
   }
 `;
 
 const resolvers = {
   Query: {
-    applicationStatus: () => {
+    applicationStatus: (
+      _parent,
+      {
+        mainIndexName = 'npm-search',
+        bootstrapIndexName = 'npm-search-bootstrap',
+      }
+    ) => {
       return searchClient
         ._jsonRequest({
           method: 'GET',
@@ -89,17 +99,23 @@ const resolvers = {
         })
         .then(({ building, ...otherKeys }) => ({
           building: {
-            npmSearch: building['npm-search'] || 0,
-            npmSearchBootstrap: building['npm-search-bootstrap'] || 0,
+            main: building[mainIndexName] || 0,
+            bootstrap: building[bootstrapIndexName] || 0,
           },
           ...otherKeys,
         }));
     },
-    indexStatus: () =>
-      searchClient
+    indexStatus: (
+      _parent,
+      {
+        mainIndexName = 'npm-search',
+        bootstrapIndexName = 'npm-search-bootstrap',
+      }
+    ) => {
+      return searchClient
         .search([
           {
-            indexName: 'npm-search',
+            indexName: mainIndexName,
             params: {
               hitsPerPage: 1,
               attributesToRetrieve: [],
@@ -107,7 +123,7 @@ const resolvers = {
             },
           },
           {
-            indexName: 'npm-search-bootstrap',
+            indexName: bootstrapIndexName,
             params: {
               hitsPerPage: 1,
               attributesToRetrieve: [],
@@ -115,11 +131,13 @@ const resolvers = {
             },
           },
         ])
-        .then(({ results: [npmSearch, npmSearchBootstrap] }) => {
-          return { npmSearch, npmSearchBootstrap };
-        }),
-    indexerStatus: () =>
-      algoliaIndex
+        .then(({ results: [main, bootstrap] }) => {
+          return { main, bootstrap };
+        });
+    },
+    indexerStatus: (_parent, { mainIndexName = 'npm-search' }) =>
+      searchClient
+        .initIndex(mainIndexName)
         .getSettings()
         .then(
           ({
@@ -139,47 +157,52 @@ const resolvers = {
           })
         ),
     npmStatus: () =>
-          // new Promise((resolve, reject) => {
-          //   resolve({nbDocs: 5, seq: 5})
-          // })
-      got('https://replicate.npmjs.com', {json: true})
-        .then(({ body: { doc_count: nbDocs, update_seq: seq } }) => ({
+      got('https://replicate.npmjs.com', { json: true }).then(
+        ({ body: { doc_count: nbDocs, update_seq: seq } }) => ({
           nbDocs,
           seq,
-        }))
+        })
+      ),
   },
 };
 
-const ALL_ITEMS_QUERY = `{
-  applicationStatus {
-    building {
-      npmSearch
-      npmSearchBootstrap
+const ALL_ITEMS_QUERY = `
+  {
+    applicationStatus(
+      mainIndexName: "npm-search"
+      bootstrapIndexName: "npm-search-bootstrap"
+    ) {
+      building {
+        main
+        bootstrap
+      }
+    }
+
+    indexStatus(
+      mainIndexName: "npm-search"
+      bootstrapIndexName: "npm-search-bootstrap"
+    ) {
+      main {
+        nbHits
+      }
+      bootstrap {
+        nbHits
+      }
+    }
+
+    indexerStatus(mainIndexName: "npm-search") {
+      seq
+      stage
+      bootstrapLastDone
+      bootstrapDone
+      bootstrapLastId
+    }
+
+    npmStatus {
+      seq
+      nbDocs
     }
   }
-
-  indexStatus {
-    npmSearch {
-      nbHits
-    }
-    npmSearchBootstrap {
-      nbHits
-    }
-  }
-
-  indexerStatus {
-    seq
-    stage
-    bootstrapLastDone
-    bootstrapDone
-    bootstrapLastId
-  }
-
-  npmStatus {
-    seq
-    nbDocs
-  }
-}
 `;
 
 const server = new ApolloServer({

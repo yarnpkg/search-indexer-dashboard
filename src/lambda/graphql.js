@@ -84,13 +84,13 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    applicationStatus: (
+    applicationStatus(
       _parent,
       {
         mainIndexName = 'npm-search',
         bootstrapIndexName = 'npm-search-bootstrap',
       }
-    ) => {
+    ) {
       return searchClient
         ._jsonRequest({
           method: 'GET',
@@ -105,13 +105,13 @@ const resolvers = {
           ...otherKeys,
         }));
     },
-    indexStatus: (
+    indexStatus(
       _parent,
       {
         mainIndexName = 'npm-search',
         bootstrapIndexName = 'npm-search-bootstrap',
       }
-    ) => {
+    ) {
       return searchClient
         .search([
           {
@@ -135,8 +135,8 @@ const resolvers = {
           return { main, bootstrap };
         });
     },
-    indexerStatus: (_parent, { mainIndexName = 'npm-search' }) =>
-      searchClient
+    indexerStatus(_parent, { mainIndexName = 'npm-search' }) {
+      return searchClient
         .initIndex(mainIndexName)
         .getSettings()
         .then(
@@ -145,17 +145,18 @@ const resolvers = {
               seq,
               bootstrapDone,
               bootstrapLastId,
-              bootstrapLastDone = 0,
+              bootstrapLastDone,
               stage,
             },
           }) => ({
             seq,
             bootstrapDone,
             bootstrapLastId,
-            bootstrapLastDone: bootstrapLastDone.toString(),
+            bootstrapLastDone: (bootstrapLastDone || 0).toString(),
             stage,
           })
-        ),
+        );
+    },
     npmStatus: () =>
       got('https://replicate.npmjs.com', { json: true }).then(
         ({ body: { doc_count: nbDocs, update_seq: seq } }) => ({
